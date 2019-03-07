@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * @file
+ * Enables admin users can add siteapikey on site information page.
+ * When installed, the custom module creates a field that facilitates a
+ * siteapikey for the site.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Form\FormStateInterface;
+
+/*
+*
+* Implements hook_form_alter
+* Add new textfield for siteapikey in Site information page
+*/
+function custom_form_system_site_information_settings_alter(&$form, FormStateInterface $form_state) {
+
+  $site_apikey = '';
+  $site_apikey = \Drupal::config('custom.settings')->get('siteapikey');
+  $form['site_information']['siteapikey'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Site API Key'),
+    '#default_value' => $site_apikey,
+    '#placeholder' => t('No API Key yet'),
+  );
+  $form['actions']['submit']['#value'] = t('Update Configuration');
+  $form['#submit'][] = 'custom_site_information_submit_handler';
+}
+
+
+/*
+* Submit handler for saving siteapikey in config
+*/
+function custom_site_information_submit_handler(&$form, FormStateInterface $formState) {
+  
+  if($form['site_information']['siteapikey']['#value'] != \Drupal::config('custom.settings')->get('siteapikey') ) {
+
+    \Drupal::configFactory()->getEditable('custom.settings')
+      ->set('siteapikey', $form['site_information']['siteapikey']['#value'])
+      ->save();
+    drupal_set_message($form['site_information']['siteapikey']['#value'].' - Site API Key updated.');
+  }
+}

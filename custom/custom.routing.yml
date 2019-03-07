@@ -1,0 +1,10 @@
+custom.page_json:
+  path: '/custom/{apikey}/{nid}'
+  defaults:
+    _controller: '\Drupal\custom\Controller\CheckPage::checkpage'
+  options:
+    parameters:
+      nid:
+        type: integer
+  requirements:
+    _permission: 'access content'
